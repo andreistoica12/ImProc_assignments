@@ -1,15 +1,15 @@
-function [imgOut, h, P] = histogramEqualization(imgIn, minOut, maxOut)
-    imgIn = double(imgIn); 
+function imgOut = histogramEqualization(imgIn, minOut, maxOut)
+    L = 256;
     [height, width] = size(imgIn);
     N = height * width;
-    minIn = min(imgIn(:));
-    maxIn = max(imgIn(:)); % == (L-1)
-    h = hist(imgIn(:), maxIn-minIn); % row vec, orig image
-    
-    P = maxIn * 1/N * cumsum(h); 
-    P =  uint8(P);
-    
-    imgOut = zeros(height, width);
-    
+    h = histcounts(imgIn(:), [0:L]);    % freq of values in possible range
+    cdf = cumsum(h)/N;                  % normalized cumulative frequency 
+    P = (L-1)*cdf;
+    % normalize for the given range
+    minIn = min(P);
+    maxIn = max(P);
+    P = minOut + (maxOut - minOut) * (P - minIn)/(maxIn-minIn);
+    P = uint8(P);
+    imgOut = intlut(imgIn, P);           % map
 end
 

@@ -2,29 +2,31 @@ close all; % close open figure windows
 clear all; % remove items from workspace
 
 a = 1;
-b = 0;
+b = 1;
 
 imname='images\peppers'; % name of the input image
+minOut = 0;
+maxOut = 255;
+
 inputfile = [imname,'.pgm'];
-im = imread(inputfile); % read input image
-figure(1)
-imshow(im)
+imgIn = imread(inputfile); % read input image
+figure()
+imshow(imgIn)
+title(['Original range: [', num2str(min(imgIn(:))), ', ', num2str(max(imgIn(:))), ']'])
 
 % Exercise 2a
 if a==1
-    stretched = contrastStretch(im, 0, 255);
-    figure(2)
+    stretched = contrastStretch(imgIn, minOut, maxOut);
+    figure()
     imshow(stretched);
-    min(stretched(:))
-    max(stretched(:))
+    title(['Stretched: [', num2str(min(stretched(:))), ', ', num2str(max(stretched(:))), ']'])
 end
 
 % Exercise 2b
 if b==1
-   
-    [~,h, P] = histogramEqualization(im, 0, 255);
-    sum(h)
-    sum(P)
-    %bar(h);
+    equalized = histogramEqualization(imgIn, minOut, maxOut);
+    figure()
+    imshow(equalized);
+    title(['Equalized: [', num2str(min(equalized(:))), ', ', num2str(max(equalized(:))), ']'])
 end
 % Exercise 2c
