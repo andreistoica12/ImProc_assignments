@@ -1,0 +1,29 @@
+We ran our main experiment with the desired output range of [0,255],
+however, the functionality allows to set any subset [min, max] of this range 
+with 0 \leq min \leq max \leq 255.
+### gradient
+We observe that stretching does not really affect the output. This is because this
+technique works well if the input image has a relatively small range of intensities.
+Obviously, this is not true, since the entire range [0, 255] is covered by the original image.
+As for the histogram equalization, conceptually this method is not very suitable in 
+the gradient case, as the histogram is already flat.
+### blurrymoon
+This image is an interesting case, since very dark intensities are dominating, which is reflected
+in the histogram of original image. Again, contrast stretching does not show a significant difference
+and yields very similar histogram. If we consider histogram equalization, we can conclude that it 
+leads to aquestionable 'enhancement'. The reason for that lies in a fact that this technique may increase the contrast 
+where it was not needed (such as background noise or the fading part of the moon in our example). Since we were
+comparing out output to built-in Matlab functions to ensure the correctness of our results, we observed that
+histeq() provided a "washed-out" image. As explained in the book, this is due to the mapping a very narrow interval of dark pixels into the
+upper end of the gray scale of the output image. Our result  differs in the sense that the background is still saturated, but the
+artifact of "washed-out" part of the moon is present. This happens because we set up the range [0,255]. The identical to the built-in
+function result can be achieved if this range is modified accordingly to [144, 255]. 
+### peppers
+This image was the most helpful for demonstration the results of contrast enhancement approaches. It still has a wide original range,
+yet the upper limit is 230. As expected, contrast stretching enhanced highlights, as the range was expanded to 255. Therefore, the
+histogram hasthe same shape as original, but as the name suggests, is uniformly stretched. Histogram equalization resulted in
+more contrast image in general, where shadows are darker than in the input image. Obviously, we cannot expect to have a flat
+histogram, but we definitely see that the values distrubution is a bit more equal among the intensity levels. 
+To demostrate a different desired range for transformed image, we considered middle 50 levels (255/2 +- 25). The same differences
+between contrast stretching and histogram equalization hold, but image is very grayinsh.
+
