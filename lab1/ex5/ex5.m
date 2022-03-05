@@ -1,21 +1,17 @@
 clear all; 
 
+
 sqSE = imread('sqSE.pgm'); % square SE
 toDilate = imread('toDilate.pgm'); % example from the slides
-%toDilate1 = imread('toDilate1.pgm'); % example from the slides
+toDilate1 = imread('toDilate1.pgm'); % example from the slides (for empty origin)
 emptyOrSE = imread('emptyOrSE.pgm'); % SE with empty origin [1,0,1]
 SE = imread('SE.pgm'); % SE from the slides [1,1]
 toErode = imread('toErode.pgm');
 
+
 dilated = dilateImg(toDilate, SE, [1,1]);
-%dilated1 = dilateImg(toDilate1, emptyOrSE, [1, 2]);
+dilated1 = dilateImg(toDilate1, emptyOrSE, [1, 2]);
 eroded = erodeImg(toErode, SE, [1,1]);
-%figure();imshow(toDilate);
-%figure();imshow(dilated);
-%figure();imshow(dilated1);
-%figure();imshow(eroded);
-
-
 
 
 function dilated = dilateImg(img, SE, origin)
