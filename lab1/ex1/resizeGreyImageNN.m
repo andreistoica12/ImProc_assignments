@@ -1,4 +1,6 @@
 function imageOut = resizeGreyImageNN(imageIn, sX, sY)
+    mustBePositive(sX);
+    mustBePositive(sY);
     [H, W] = size(imageIn);
     new_H = floor(sX * H);
     new_W = floor(sY * W);
