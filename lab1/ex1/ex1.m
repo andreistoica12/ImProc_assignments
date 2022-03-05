@@ -13,3 +13,13 @@ resizedImage = resizeGreyImageNN(im, 0.7, 1.39);
 figure(2)
 imshow(resizedImage);
 title('Resized image, using nearest neighbor interpolation');
+
+resizedImageBL = resizeGreyImageBL(im, 0.7, 0.7);
+
+figure(3)
+imshow(resizedImageBL);
+title('Resized image, using bilinear interpolation');
+
+resizedImageBLMatlab = imresize(im, 0.7, 'bilinear');
+figure(4)
+imshow(resizedImageBLMatlab);
