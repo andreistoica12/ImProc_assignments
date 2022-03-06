@@ -1,17 +1,117 @@
 clear all; 
 
+a =  0;
+b = 0;
+c = 0;
 
-sqSE = imread('sqSE.pgm'); % square SE
-toDilate = imread('toDilate.pgm'); % example from the slides
-toDilate1 = imread('toDilate1.pgm'); % example from the slides (for empty origin)
-emptyOrSE = imread('emptyOrSE.pgm'); % SE with empty origin [1,0,1]
+
+sqSE = imread('sqSE.pgm'); % square 3x3 SE 
 SE = imread('SE.pgm'); % SE from the slides [1,1]
-toErode = imread('toErode.pgm');
+
+%%% Ex 5a %%%
+if a == 1
+ toDilate = imread('toDilate.pgm'); % example from the slides
+ dilated = dilateImg(toDilate, SE, [1,1]);
+ 
+ toDilate1 = imread('toDilate1.pgm'); % example from the slides (for empty origin)
+ emptyOrSE = imread('emptyOrSE.pgm'); % SE with empty origin [1,0,1]
+ dilated1 = dilateImg(toDilate1, emptyOrSE, [1, 2]);
+end
+
+%%% Ex 5b %%%
+if b == 1
+    toErode = imread('toErode.pgm');
+    eroded = erodeImg(toErode, SE, [1,1]);
+end
 
 
-dilated = dilateImg(toDilate, SE, [1,1]);
-dilated1 = dilateImg(toDilate1, emptyOrSE, [1, 2]);
-eroded = erodeImg(toErode, SE, [1,1]);
+% img = imread('images\dice.pgm');
+% img = im2bw(img, 0.5);
+% img = openImg(img, ones(3,3), [2,2]);
+% reduced = img(70:end-80,end-200:end-50);
+% imshow(reduced)
+% tic
+% [dice, pips] = countDice(reduced);
+% toc
+
+%%% Ex 5c %%%
+if c==1
+img = imread('images\dice.pgm');
+%img = img(40:110,50:250);
+img = im2bw(img, 0.5);
+img = openImg(img, sqSE, [2,2]);
+imshow(img)
+
+[dice, pips] = countDice(img, ones(7,7), ones(7,7));
+h = histcounts(pips, [1:10]); 
+bar(h);
+totalPips = sum(pips);
+end
+
+
+
+function component = connectedComponent(img, SE)
+    component = zeros(size(img));
+   [pR, pC] = find(img, 1, 'first'); 
+    component(pR, pC) = 1;
+    temp = zeros(size(component));
+    while ~isequal(temp, component) 
+        temp = component;
+        component = dilateImg(temp, SE, [ceil(size(SE,1)/2),ceil(size(SE,2)/2)]) & img;
+    end
+end
+
+function [numOfDice, numOfPips] = countDice(img, diceSE, pipsSE)
+    numOfDice = 0; % number of dice
+    numOfPips = []; % number of pips per each dice
+    allDice = zeros(size(img)); % holder for connected components
+    
+    while any(img, 'all') % for each dice
+        dice =  connectedComponent(img, diceSE);
+        allDice = allDice + dice;
+        numOfDice = numOfDice +1;
+        img = img - dice;
+        
+        unholeyDice = closeHoles(dice, pipsSE);
+        pipsImg = unholeyDice - dice; % only holes should be kept
+        
+        pips = zeros(size(img));
+        pipsPerDice = 0;
+        while any(pipsImg, 'all') % for each pip
+            pip = connectedComponent(pipsImg, pipsSE);
+            pips = pips + pip;
+            pipsPerDice = pipsPerDice + 1;
+            pipsImg = pipsImg - pip;
+        end
+         numOfPips = [numOfPips, pipsPerDice];
+    end
+    
+end
+
+
+
+function unholey = closeHoles(img, SE)
+    mask = ~img;
+ 
+    marker = zeros(size(img,1), size(img,2));   
+    marker(1,:) = 1-img(1,:);
+    marker(end,:) = 1-img(end,:);
+    marker(2:end-1,1) = 1-img(2:end-1,1);
+    marker(2:end-1,end) = 1-img(2:end-1,end);
+    
+    unholey = marker;
+    temp = zeros(size(marker));
+    while ~isequal(temp, unholey) 
+    temp = unholey;
+    unholey = dilateImg(temp, SE, [ceil(size(SE,1)/2),ceil(size(SE,2)/2)]) & mask;
+    end
+    unholey(:)=~unholey;
+end
+
+
+function opened = openImg(img, SE, origin)
+    opened = dilateImg(erodeImg(img, SE, origin), SE, origin);
+end
 
 
 function dilated = dilateImg(img, SE, origin)
@@ -45,10 +145,9 @@ function J = dilate(I, A, r, c)
     end
 end
 
-
 function P = pad(I, h, w, r, c, v)
-    P = padarray(I, [h-r, w-c ],v, 'post'); 
-    P = padarray(P, [r-1, c-1], v,'pre'); 
+    P = v * ones(h-1+size(I,1), w-1+size(I,2));
+    P(r:size(I,1)+r-1, c:size(I,2)+c-1) = I;
 end
 
 function [B, r, c] = reflect(A, r, c)
