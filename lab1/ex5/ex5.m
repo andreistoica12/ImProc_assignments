@@ -8,6 +8,12 @@ c = 0;
 sqSE = imread('sqSE.pgm'); % square 3x3 SE 
 SE = imread('SE.pgm'); % SE from the slides [1,1]
 
+img1 = imread('images\dice.pgm');
+img2=img1;
+img1(img1 < 128) = 0;
+img1(img1 >= 128) = 255;
+imshow(img1);
+
 %%% Ex 5a %%%
 if a == 1
  toDilate = imread('toDilate.pgm'); % example from the slides
@@ -24,21 +30,15 @@ if b == 1
     eroded = erodeImg(toErode, SE, [1,1]);
 end
 
-
-% img = imread('images\dice.pgm');
-% img = im2bw(img, 0.5);
-% img = openImg(img, ones(3,3), [2,2]);
 % reduced = img(70:end-80,end-200:end-50);
-% imshow(reduced)
-% tic
-% [dice, pips] = countDice(reduced);
-% toc
+%img = img(40:110,50:250);
 
 %%% Ex 5c %%%
 if c==1
 img = imread('images\dice.pgm');
-%img = img(40:110,50:250);
 img = im2bw(img, 0.5);
+%img(img < 128) = 0;
+%img(img >= 128) = 255;
 img = openImg(img, sqSE, [2,2]);
 imshow(img)
 
