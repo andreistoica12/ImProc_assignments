@@ -6,7 +6,8 @@ function mse = MSE(imageIn1,imageIn2)
 %     with the same dimensions
     assert((H1 == H2) && (W1 == W2));
 
-%     we need to work with matrices with element type double
+%     we need to work with matrices with element type double, so that
+%     further operations in computing the MSE don't cap results at 255
     imageIn1_double = double(imageIn1);
     imageIn2_double = double(imageIn2);
     
