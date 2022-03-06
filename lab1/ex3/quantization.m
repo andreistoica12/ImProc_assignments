@@ -62,7 +62,7 @@ function [quantizedImage, means, clusters, current_positions, label_matrix] = qu
                 for column = 1:W
                     fprintf("Iteration %d,  pixel (%d, %d)\n", iteration, row, column);
 
-                    [~, min_index] = min(abs(means - imageIn(row, column)));
+                    [~, min_index] = min(abs(double(means) - double(imageIn(row, column))));
                     for cluster = 1:k
                         if min_index == cluster
                             clusters(min_index, current_positions(min_index)) = imageIn(row, column);
