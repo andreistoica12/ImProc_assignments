@@ -9,7 +9,9 @@ function imgOut = histogramEqualization(imgIn, minOut, maxOut)
     minIn = min(P);
     maxIn = max(P);
     P = minOut + (maxOut - minOut) * (P - minIn)/(maxIn-minIn);
-    P = uint8(P);
-    imgOut = intlut(imgIn, P);           % map
+    imgOut = imgIn;
+    imgOut(:) = P(imgIn(:)+1);      % map
 end
+
+
 
