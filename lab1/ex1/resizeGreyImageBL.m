@@ -1,13 +1,13 @@
-function imageOut = resizeGreyImageBL(imageIn, sX, sY)
+function imageOut = resizeGreyImageBL(imageIn, sR, sC)
 %     we validate the input (both scaling factors need to be positive
 %     numbers)
-    mustBePositive(sX);
-    mustBePositive(sY);
+    mustBePositive(sR);
+    mustBePositive(sC);
 %     we store the initial spacial size of the input
     [H, W] = size(imageIn);
 %     we define the dimensions of the new grid (output image)
-    new_H = floor(sX * H);
-    new_W = floor(sY * W);
+    new_H = floor(sR * H);
+    new_W = floor(sC * W);
 
 %     initialize the output image with zeros
     imageOut = zeros(new_H, new_W);
@@ -16,34 +16,35 @@ function imageOut = resizeGreyImageBL(imageIn, sX, sY)
     w_ratio = W / new_W;
 
     for i = 1:new_H
-        y = (h_ratio * i) + (0.5 * (1 - 1/sY));
+        r = (h_ratio * i) + (0.5 * (1 - 1/sR));
         for j = 1:new_W
-            x = (w_ratio * j) + (0.5 * (1 - 1/sX));
+            c = (w_ratio * j) + (0.5 * (1 - 1/sC));
 
 %             Any values out of acceptable range
-            x(x < 1) = 1;
-            x(x > H - 0.001) = H - 0.001;
-            x1 = floor(x);
-            x2 = x1 + 1;
+            c(c < 1) = 1;
+            c(c > W - 0.001) = W - 0.001;
+            c1 = floor(c);
+            c2 = c1 + 1;
+            
 
-            y(y < 1) = 1;
-            y(y > W - 0.001) = W - 0.001;
-            y1 = floor(y);
-            y2 = y1 + 1;
-
+            r(r < 1) = 1;
+            r(r > H - 0.001) = H - 0.001;
+            r1 = floor(r);
+            r2 = r1 + 1;
+            
 %             the 4 neighboring pixels
-            NP1 = imageIn(y1,x1);
-            NP2 = imageIn(y1,x2);
-            NP3 = imageIn(y2,x1); 
-            NP4 = imageIn(y2,x2);
+            NP1 = imageIn(r1,c1);
+            NP2 = imageIn(r1,c2);
+            NP3 = imageIn(r2,c1); 
+            NP4 = imageIn(r2,c2);
 
 %             coefficients for the weighted average over the 4 neighbors
-            c1 = (y2-y)*(x2-x);
-            c2 = (y2-y)*(x-x1);
-            c3 = (x2-x)*(y-y1);
-            c4 = (y-y1)*(x-x1);
+            co1 = (r2-r)*(c2-c);
+            co2 = (r2-r)*(c-c1);
+            co3 = (c2-c)*(r-r1);
+            co4 = (r-r1)*(c-c1);
 
-            imageOut(i,j) = c1 * NP1 + c2 * NP2 + c3 * NP3 + c4 * NP4;
+            imageOut(i,j) = co1 * NP1 + co2 * NP2 + co3 * NP3 + co4 * NP4;
 
             imageOut = uint8(imageOut);
         end
