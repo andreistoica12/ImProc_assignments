@@ -1,4 +1,4 @@
-function [quantizedImage, means, clusters, current_positions, label_matrix] = quantization(imageIn, k)
+function [quantizedImage, means, means_matrix, initial_means, clusters, current_positions, label_matrix] = quantization(imageIn, k)
 %     we throw an error if the number of clusters is negative
     assert(k > 0);
 
@@ -23,7 +23,10 @@ function [quantizedImage, means, clusters, current_positions, label_matrix] = qu
         condition = length(means) ~= length(unique(means));
         while(condition)
             means = uint8(randi([0, 255], 1, k));
+            condition = length(means) ~= length(unique(means));
         end
+
+        initial_means = means;
 
 %         NOT USED ANYMORE
 % %         we initialize k empty cluster arrays. We will use direct indexing
@@ -35,6 +38,12 @@ function [quantizedImage, means, clusters, current_positions, label_matrix] = qu
 %             eval(sprintf("cluster%d = []", cluster));
 %         end
         
+%         matrix to store all means vectors, each corresponding to an
+%         iteration. At the end, we will make a column-wise average and
+%         have a final means array, which will combine information from all
+%         iterations. As we established the number of iterations to be
+%         equal to 5, we have a 5 x k means matrix.
+        means_matrix = zeros(5, k);
         
         for iteration = 1:5
 
@@ -58,10 +67,15 @@ function [quantizedImage, means, clusters, current_positions, label_matrix] = qu
     %         pixel stores the cluster index
             label_matrix = zeros(H, W);
 
+            if iteration ~= 1
+                means = means_matrix(iteration - 1, :);
+            end
+
             for row = 1:H
                 for column = 1:W
                     fprintf("Iteration %d,  pixel (%d, %d)\n", iteration, row, column);
-
+                    
+                    
                     [~, min_index] = min(abs(double(means) - double(imageIn(row, column))));
                     for cluster = 1:k
                         if min_index == cluster
@@ -74,9 +88,18 @@ function [quantizedImage, means, clusters, current_positions, label_matrix] = qu
             end
 
             for cluster = 1:k
-                means(cluster) = sum(clusters(cluster,:)) / nnz(clusters(cluster,:));
-            end                  
+                nr_of_non_zero_elements = nnz(clusters(cluster,:));
+                if nr_of_non_zero_elements ~= 0
+                    means(cluster) =  sum(clusters(cluster,:)) / nnz(clusters(cluster,:));
+                else
+                    means(cluster) = means(cluster);
+                end
+            end
+
+            means_matrix(iteration, :) = means;
         end
+
+        means = mean(means_matrix);
 
         for cluster = 1:k
             label_matrix(label_matrix == cluster) = means(cluster);
