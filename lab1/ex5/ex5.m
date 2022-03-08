@@ -2,17 +2,11 @@ clear all;
 
 a =  0;
 b = 0;
-c = 0;
+c = 1;
 
 
 sqSE = imread('sqSE.pgm'); % square 3x3 SE 
 SE = imread('SE.pgm'); % SE from the slides [1,1]
-
-img1 = imread('images\dice.pgm');
-img2=img1;
-img1(img1 < 128) = 0;
-img1(img1 >= 128) = 255;
-imshow(img1);
 
 %%% Ex 5a %%%
 if a == 1
@@ -30,17 +24,15 @@ if b == 1
     eroded = erodeImg(toErode, SE, [1,1]);
 end
 
-% reduced = img(70:end-80,end-200:end-50);
-%img = img(40:110,50:250);
 
 %%% Ex 5c %%%
 if c==1
 img = imread('images\dice.pgm');
-img = im2bw(img, 0.5);
-%img(img < 128) = 0;
-%img(img >= 128) = 255;
+%img = img(200:380,10:110);% uncomment this to test on a small piece of img
+img(img < 128) = 0;
+img(img >= 128) = 255;
+%img = im2bw(img, 0.5);
 img = openImg(img, sqSE, [2,2]);
-imshow(img)
 
 [dice, pips] = countDice(img, ones(7,7), ones(7,7));
 h = histcounts(pips, [1:10]); 
@@ -73,8 +65,9 @@ function [numOfDice, numOfPips] = countDice(img, diceSE, pipsSE)
         img = img - dice;
         
         unholeyDice = closeHoles(dice, pipsSE);
-        pipsImg = unholeyDice - dice; % only holes should be kept
         
+        pipsImg = unholeyDice - dice; % only holes should be kept
+       
         pips = zeros(size(img));
         pipsPerDice = 0;
         while any(pipsImg, 'all') % for each pip

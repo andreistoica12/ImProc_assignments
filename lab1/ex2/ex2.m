@@ -3,12 +3,12 @@ clear all; % remove items from workspace
 
 a = 1;
 b = 1;
-c = 0;
+c = 1;
 
 imname='images\peppers'; % name of the input image
 L = 256;
-minOut = 102; %0;
-maxOut = 153;%L-1;
+minOut = 0;
+maxOut = L-1;
 
 inputfile = [imname,'.pgm'];
 imgIn = imread(inputfile); % read input image
