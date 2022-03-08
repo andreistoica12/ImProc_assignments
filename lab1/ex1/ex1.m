@@ -38,9 +38,12 @@ title('Resized image, using bilinear interpolation');
 % myMSE = MSE(test1, test2);
 
 % exercise 1c
-[H_im2, W_im2] = size(im2);
-im1testMSE = imresize(im, [H_im2 W_im2]);
-im2testMSE = im2;
+[H_im, W_im] = size(im);
+NN_image = imresize(resizedImageNN, [H_im W_im]);
+BL_image = imresize(resizedImageBL, [H_im W_im]);
+original_image = im;
 
-MatlabMSE = immse(im1testMSE, im2testMSE);
-myMSE = MSE(im1testMSE, im2testMSE);
+% MatlabMSE_NN = immse(original_image, NN_image);
+MSE_NN = MSE(original_image, NN_image);
+% MatlabMSE_BL = immse(original_image, BL_image);
+MSE_BL = MSE(original_image, BL_image);
