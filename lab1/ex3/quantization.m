@@ -67,6 +67,10 @@ function [quantizedImage, means, means_matrix, initial_means, clusters, current_
     %         pixel stores the cluster index
             label_matrix = zeros(H, W);
 
+            if iteration ~= 1
+                means = means_matrix(iteration - 1, :);
+            end
+
             for row = 1:H
                 for column = 1:W
                     fprintf("Iteration %d,  pixel (%d, %d)\n", iteration, row, column);
