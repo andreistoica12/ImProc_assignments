@@ -20,7 +20,7 @@ imshow(resizedImageNN);
 title('Resized image, using nearest neighbor interpolation');
 
 % exercise 1b
-resizedImageBL = resizeGreyImageBL(im, 0.7, 0.7);
+resizedImageBL = resizeGreyImageBL(im, 0.7, 1.39);
 
 figure(3)
 imshow(resizedImageBL);
