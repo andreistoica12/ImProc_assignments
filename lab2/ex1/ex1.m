@@ -1,8 +1,8 @@
 clear all;
 
 a=0;
-b=1;
-c=0;
+b=0;
+c=1;
 
 img = imread('images/lena.pgm');
 
@@ -17,7 +17,10 @@ end
 if b==1
     epsilon = 0.1;
     th = iterativeThreshold(img, epsilon);
-    img = thresholdImage(th, img, 0, 255);
-    figure();imshow(img);
+end
+
+% Exercise 1c
+if c==1
+    th = otsuThreshold(img);
 end
 
