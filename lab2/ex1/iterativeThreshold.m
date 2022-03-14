@@ -6,6 +6,7 @@ while true
     thOld = th;
     th = (muF+muB)/2;
     if abs(th-thOld) < epsilon
+        th = uint8(th);
         break;
     end
 end
