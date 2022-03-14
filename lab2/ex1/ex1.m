@@ -24,3 +24,6 @@ if c==1
     th = otsuThreshold(img);
 end
 
+
+
+
