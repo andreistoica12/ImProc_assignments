@@ -4,5 +4,6 @@ if connectivity == 4
 else
  imgOut =  bwdist(imgIn,'chessboard') <= n; 
 end
+
 end
 
