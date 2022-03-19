@@ -6,18 +6,20 @@ k=4;
 [out, l]  =q(imgc,k,1);
 
 unique(l)
+[m,i] = min(l);
 imshow(out);
 
 function [pixelLabels, minDist] = cluster(img, means, k, method, minDist, pixelLabels)
 img = double(img);
     for mean = 1:k
+        kmean = repmat(double(means(mean,:)), size(img,1),1);
         if method == 1
-         kmean = repmat(double(means(mean,:)), size(img,1),1);
          ds = sqrt(sum((img-kmean).^2,2));
-         %ds = sum(abs(img-kmean),2);
+        elseif method == 2
+         ds = sum(abs(img-kmean),2);
         end
-         pixelLabels(minDist > ds) = mean;
-         minDist(minDist > ds) = ds(ds < minDist);
+         pixelLabels(minDist >= ds) = mean;
+         minDist(minDist >= ds) = ds(ds <= minDist);
     end
 end
 
@@ -39,14 +41,18 @@ randPixels = randi([1 H*W], [1 k]); % indices of random pixels
 means = RGB(randPixels, :); % centroids 
 pixelLabels = zeros(H*W,1);
 minDist = 255*ones(H*W, 1);
-for iter=1:20
+
+for iter=1:10
      [pixelLabels, minDist] = cluster(reshapedImg, means, k, method, minDist, pixelLabels);
      means = updateMeans(pixelLabels, reshapedImg, k);
 end
 
+% assign mean colors to clusters 
 for cl=1:k
     reshapedImg(pixelLabels==cl,:) = repmat(means(cl, :), sum(pixelLabels == cl), 1); 
 end
+
+% reshape image back to 3D
 imgOut = (reshape(reshapedImg, [H,W,c]));
 end
 
