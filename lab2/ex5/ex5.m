@@ -4,23 +4,23 @@ level = otsuThreshold(img);  % find suitable threshold
 img = thresholdImage(level,img, 0,1); % binarize image
 bw = double(img); % copy original binary image
 SE = ones(2,2);
+
 img = erodeImg(img,SE, [2,2]); % erode image to obtain more prominent lines that split sudoku boxes
 
 % Find connected components (all)
 CC = bwconncomp(img);
-   numOfPixels = cellfun(@numel,CC.PixelIdxList);
-   [~,indexOfMax] = max(numOfPixels); % max CC corresponds to page "border"
-   sudokuBox = zeros(size(img));
-   sudokuBox(CC.PixelIdxList{indexOfMax}) = 1; % extract only page "border"
-   
-   digits = zeros(size(img)); % will contain all sudoku digits
-   emptyBoxes = zeros(size(img));  % will contain all empty sudoku boxes
-   
-   sudoku = bw-sudokuBox; % get only sudoku boxes
-   sudoku=erodeImg(sudoku,SE, [2,2]); % erode to get rid of residual lines
-   %figure(); imshow(sudoku);
+numOfPixels = cellfun(@numel,CC.PixelIdxList);
+[~,indexOfMax] = max(numOfPixels); % max CC corresponds to page "border"
+sudokuBox = zeros(size(img));
+sudokuBox(CC.PixelIdxList{indexOfMax}) = 1; % extract only page "border"
 
-   for box=1:81 % consider each small box as a CC on its own
+digits = zeros(size(img)); % will contain all sudoku digits
+emptyBoxes = zeros(size(img));  % will contain all empty sudoku boxes
+   
+sudoku = bw-sudokuBox; % get only sudoku boxes
+sudoku=erodeImg(sudoku,SE, [2,2]); % erode to get rid of residual lines
+   
+for box=1:81 % consider each small box as a CC on its own
    CC.PixelIdxList{indexOfMax}=0; % update current max, as boxes should occupy most space
    numOfPixels = cellfun(@numel,CC.PixelIdxList);
    [~,indexOfMax] = max(numOfPixels); % find new CC (box) that occupies largest area
@@ -32,7 +32,7 @@ CC = bwconncomp(img);
    digit = zeros(size(img));
    digit(digitCC.PixelIdxList{1}) = 0; % set background to 0
  
- if digitCC.NumObjects > 1  % means non-empty box
+ if  digitCC.NumObjects > 1  % means non-empty box
      digit(digitCC.PixelIdxList{2}) = 1; % digit
      digit = digit-sudoku; % bring back holes of digits
      digits = digits+digit; % add digit to an image containing only digits
@@ -42,16 +42,18 @@ CC = bwconncomp(img);
       emptyBoxes = emptyBoxes+sudokuBox; % add box to an image containing only boxes 
  end
 
-   end
-   digits(digits <= 0) = 0;
-   digits(digits > 0) = 1;
-   emptyBoxes(emptyBoxes <= 0) = 0;
-   emptyBoxes(emptyBoxes > 0) = 1;
-%    figure(); imshow(digits);
-%    figure(); imshow(emptyBoxes);
-   figure(); imshow(digits + emptyBoxes);
-   
- % imwrite(final, "out2/finaltt.png");
+end
+
+digits(digits <= 0) = 0;
+digits(digits > 0) = 1;
+emptyBoxes(emptyBoxes <= 0) = 0;
+emptyBoxes(emptyBoxes > 0) = 1;
+
+figure(); imshow(digits);
+figure(); imshow(emptyBoxes);
+figure(); imshow(digits + emptyBoxes);
+  
+
  
  
  %%%%%%%%%%%%%% From previous lab
