@@ -1,6 +1,6 @@
 clear all;
 
-a=0;
+a=1;
 b=0;
 c=0;
 d=0;
@@ -8,6 +8,7 @@ d=0;
 
 % Exercise 1a
 if a==1
+img = imread("../../images/lena.pgm");
 img = thresholdImage(100, img, 0, 255);
 imshow(img);
 end
@@ -29,7 +30,7 @@ if d==1
     ths = [32,64,128,192];
     tuples = zeros(size(names,2), size(ths,2));
      for i=1:size(names,2)
-         img = imread(strcat("images/", names(i),".pgm"));
+         img = imread(strcat("../../images/", names(i),".pgm"));
          for t=1:size(ths,2)
          out = thresholdImage(ths(t), img, 0, 255);
          foreground = size(find(out(:) == 255),1);

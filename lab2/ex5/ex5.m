@@ -1,4 +1,5 @@
-img = imread("images/sudoku1.ppm");
+img = imread("../../images/sudoku1.ppm");
+
 img = intensityFromRGB(img); % convert to grayscale 
 level = otsuThreshold(img);  % find suitable threshold
 img = thresholdImage(level,img, 0,1); % binarize image

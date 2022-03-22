@@ -1,5 +1,5 @@
 clear all;
-in =  imread("images/bacteria.pgm");
+in =  imread("../../images/bacteria.pgm");
 in = im2bw(in, 0.3);
 n = 4;
 se4 = strel("diamond", 1);
@@ -8,23 +8,25 @@ out=in;
 
 %% repeated dilation
 for i=1:n
-out= imdilate(out, se8);
+out= imdilate(out, se4);
 end
 %figure();imshow(out);
 
 %% dilation with distance transform
-out = dilationNfold(n, 8, in);
+out1 = dilationNfold(n, 4, in);
 %figure();imshow(out);
+
 
 out = in;
 %% repeated erosion
 for i=1:n
-out= imerode(out, se8);
+out= imerode(out, se4);
 end
-figure();imshow(out);
+%figure();imshow(out);
 
 %% erosion with distance transform 
-out = erosionNfold(n,8,in);
-figure();imshow(out);
+out1 = erosionNfold(n,4,in);
+%figure();imshow(out);
+
 %%
 

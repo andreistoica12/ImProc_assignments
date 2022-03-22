@@ -1,11 +1,23 @@
 clear all;
+b = 1;
 
-imgc = imread("images/poppies.ppm");
-k=6;
+% Exercise 1b
+if b==1
+ names = ["colourflower", "peppers", "poppies", "roses"];
+ ks = [1, 2, 4, 5, 6, 8, 10, 20, 30, 50, 100];
 
-[out, l, iters]  = kMeansRgb(imgc,k,1);
-labels = unique(l);
-imshow(out);
+ for i=1:size(names,2)
+         img = imread(strcat("../../images/", names(i),".ppm"));
+         for metric=1:3
+             for k=1:size(ks,2)
+         [out, ~, iters] = kMeansRgb(img, ks(k), metric);
+         
+         imwrite(out, strcat("out/",num2str(metric), "_", names(i), "_k=", num2str(ks(k)), "_iters=", num2str(iters), ".png"));
+        
+             end
+         end
+ end
+end
 
 function pixelLabels = cluster(img, means, k, metric, minDist, pixelLabels)
     for clusterLabel = 1:k
@@ -45,7 +57,7 @@ function [imgOut, pixelLabels, iter] = kMeansRgb(imageIn, k, metric)
 reshapedImg = reshape(imageIn, [H*W,c]); 
 randPixels = randi([1 H*W], [1 k]);         % indices of random pixels
 means = reshapedImg(randPixels, :);         % centroids 
-pixelLabels = zeros(H*W,1);
+pixelLabels = ones(H*W,1);
 minDist = 255*ones(H*W, 1);
 
 for iter=1:100
