@@ -1,4 +1,5 @@
 function H=highPassButterworthFilter(D0,n,M,N)
+% Returns centered at (M/2, N/2) kernel
 rfloor = floor(M/2); rceil = ceil(M/2); % midpoint along rows
 cfloor = floor(N/2); cceil = ceil(N/2); % midpoint along columns
 u = -rfloor:rceil-1; % centered vector along rows
