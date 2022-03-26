@@ -1,7 +1,7 @@
 clear all;
 n=2;
 
-D0=160;
+D0=60;
 % M=10;N=10;
 % img = randi(255, M,N);
 
