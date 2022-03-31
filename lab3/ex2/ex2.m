@@ -6,24 +6,47 @@ img = imread("..\..\images\plant.pgm");
 sigma=5.0;
 J=3;
 
-% pyr = pyramidDecomposition(img,J,sigma);
-% subplot(1,2,1);
-% 
-% imshow(img);
-% title('Original')  
-% subplot(1,2,2);
-% imshow(uint8(pyr));
-% title('Pyramid')  
+%%% Exercise 2a %%%
+pyr = pyramidDecomposition(img,J,sigma);
+figure();
+subplot(1,2,1);
+imshow(img);
+title('Original')  
+subplot(1,2,2);
+imshow(uint8(pyr));
+title('Pyramid')  
+
+%%% Exercise 2b %%%
+im = pyramidReconstruction(pyr,J,sigma);
+figure(); imshow(uint8(im));
+
+%%% Exercise 2c %%%
+err = error(img, im);
 
 
+function err = error(f,g)
+f = double(f);
+g= double(g);
+[M, ~] = size(f);
+err = 1/(M^2) * sum(abs(f-g), 'all');
+end
 
-function im=pyramidReconstruction(pyr,J,sigma)
-% [P, M] = size(pyr);
-% fj = pyr();
-% for level=1:J
-%    fj = expand(pyr(P-));
-%    fj = fj + pyr();
-% end
+function fj=pyramidReconstruction(pyr,J,sigma)
+[~, M] = size(pyr);
+exponents = [0:J-1];
+bases = 0.5 * ones(1, J);
+P = M * (bases .^ exponents);
+r = sum(P)-P(end); c =(M/2-M/(2^J));
+fj = pyr(r+1:end, c+1:(M/2-M/(2^J))+P(end)); %  take apex
+for i=1:J-1
+   level = J-i;
+   rstart = sum(P)-sum(P(level:end))+1;
+   rend = rstart+P(level)-1;
+   cstart =  M/2 - M/(2^level)+1;
+   cend = cstart + P(level)-1;
+   fj = expand(fj, sigma);
+   fj = fj + pyr(rstart:rend, cstart:cend);
+end
 end
 
 function [pyr,fj]=pyramidDecomposition(img,J,sigma)
@@ -31,8 +54,8 @@ img = double(img);
 [M, ~] = size(img);
 exponents = [0:J-1];
 bases = 0.5 * ones(1, J);
-P = M * sum(bases .^ exponents);
-pyr = zeros (P, M);
+P = M * (bases .^ exponents);
+pyr = zeros (sum(P), M);
 r=1;c=1;
 fj = img;
 for level=1:J
@@ -40,18 +63,19 @@ for level=1:J
          fj = reduce(fj, sigma);
     end
     if level < J
+        
         dj =  fj - expand(reduce(fj, sigma), sigma);
-        pyr(r:r+size(dj,1)-1, c:c+size(dj,2)-1) = dj;
-        r = r + size(dj,1); c = c+size(dj,2)/4;
+        pyr(r:r+P(level)-1, c:c+P(level)-1) = dj;
+        r = r + P(level); c = c+P(level)/4;
     end 
 end
-pyr(r:r+size(fj,1)-1, c:c+size(dj,2)/2-1) = fj;
+pyr(r:r+P(level)-1, c:c+P(level)-1) = fj;
 end
 
 function f = reduce(f, sigma)
 % Gaussian filtering followed by downsampling
 [M, N] = size(f);
-H = gaussian(sigma, M, N, 'l' );
+H = gaussian(sigma, M, N );
 f = convolutionFilter(f, H);
 f = downsampleX2(f);
 end
@@ -60,7 +84,7 @@ function f = expand(f, sigma)
 % upsampling followed by Gaussian filtering
 f = upsampleX2(f);
 [M, N] = size(f);
-H = gaussian(sigma, M, N, 'l' );
+H = gaussian(sigma, M, N);
 f = convolutionFilter(f, H);
 end
 
@@ -75,7 +99,7 @@ temp(1:2:end, 1:2:end) = f;
 f = temp;
 end
 
-function H = gaussian(D0,M,N, t)
+function H = gaussian(D0,M,N)
 % Returns centered at (M/2, N/2) kernel
 rfloor = floor(M/2); rceil = ceil(M/2); % midpoint along rows
 cfloor = floor(N/2); cceil = ceil(N/2); % midpoint along columns
@@ -84,9 +108,6 @@ v = -cfloor:cceil-1; % centered vector along columns
 [V,U] = meshgrid(v,u); % mesh of size M x N
 D = ((U).^2 + (V).^2);
 H =  exp(-(D) ./(2*D0^2));
-if t == 'h'
-    H = ones(size(H)) - H;
-end
 end
 
 function g = convolutionFilter(img, H)
