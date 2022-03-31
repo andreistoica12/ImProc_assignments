@@ -3,13 +3,30 @@ clear all;
 img = imread("..\..\images\plant.pgm");
 [M, N] = size(img);
 
-sigma=5;
+sigma=5.0;
 J=3;
-pyr = pyramidDecomposition(img,J,sigma);
-imshow(uint8(pyr));
- 
 
-function pyr=pyramidDecomposition(img,J,sigma)
+% pyr = pyramidDecomposition(img,J,sigma);
+% subplot(1,2,1);
+% 
+% imshow(img);
+% title('Original')  
+% subplot(1,2,2);
+% imshow(uint8(pyr));
+% title('Pyramid')  
+
+
+
+function im=pyramidReconstruction(pyr,J,sigma)
+% [P, M] = size(pyr);
+% fj = pyr();
+% for level=1:J
+%    fj = expand(pyr(P-));
+%    fj = fj + pyr();
+% end
+end
+
+function [pyr,fj]=pyramidDecomposition(img,J,sigma)
 img = double(img);
 [M, ~] = size(img);
 exponents = [0:J-1];
@@ -34,7 +51,7 @@ end
 function f = reduce(f, sigma)
 % Gaussian filtering followed by downsampling
 [M, N] = size(f);
-H = gaussian(sigma, M, N );
+H = gaussian(sigma, M, N, 'l' );
 f = convolutionFilter(f, H);
 f = downsampleX2(f);
 end
@@ -43,7 +60,7 @@ function f = expand(f, sigma)
 % upsampling followed by Gaussian filtering
 f = upsampleX2(f);
 [M, N] = size(f);
-H = gaussian(sigma, M, N );
+H = gaussian(sigma, M, N, 'l' );
 f = convolutionFilter(f, H);
 end
 
@@ -58,7 +75,7 @@ temp(1:2:end, 1:2:end) = f;
 f = temp;
 end
 
-function H = gaussian(D0,M,N)
+function H = gaussian(D0,M,N, t)
 % Returns centered at (M/2, N/2) kernel
 rfloor = floor(M/2); rceil = ceil(M/2); % midpoint along rows
 cfloor = floor(N/2); cceil = ceil(N/2); % midpoint along columns
@@ -67,6 +84,9 @@ v = -cfloor:cceil-1; % centered vector along columns
 [V,U] = meshgrid(v,u); % mesh of size M x N
 D = ((U).^2 + (V).^2);
 H =  exp(-(D) ./(2*D0^2));
+if t == 'h'
+    H = ones(size(H)) - H;
+end
 end
 
 function g = convolutionFilter(img, H)
