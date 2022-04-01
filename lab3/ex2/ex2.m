@@ -3,11 +3,12 @@ clear all;
 img = imread("..\..\images\plant.pgm");
 [M, N] = size(img);
 
-sigma=5.0;
+sigma=1.0;
 J=3;
 
-%%% Exercise 2a %%%
-pyr = pyramidDecomposition(img,J,sigma);
+
+% %%% Exercise 2a %%%
+ pyr = pyramidDecomposition(img,J,sigma);
 figure();
 subplot(1,2,1);
 imshow(img);
@@ -16,17 +17,31 @@ subplot(1,2,2);
 imshow(uint8(pyr));
 title('Pyramid')  
 
-%%% Exercise 2b %%%
+% %%% Exercise 2b %%%
 im = pyramidReconstruction(pyr,J,sigma);
-figure(); imshow(uint8(im));
+figure();
+subplot(1,2,1);
+imshow(img);
+title('Original')  
+subplot(1,2,2);
+imshow(uint8(im));
+title('Reconstructed')  
 
 %%% Exercise 2c %%%
-err = error(img, im);
+errUint = error(img, uint8(im));
+errDouble = error(double(img), im);
+
+diffImg = abs(double(img)-im);
+minnz = min(diffImg(diffImg > 0)); % min non-zero
+diffImg(diffImg >= minnz) = 255;
+figure(); 
+imshow(diffImg);
+fused = imfuse(img,diffImg);
+figure();
+imshow(fused);
 
 
 function err = error(f,g)
-f = double(f);
-g= double(g);
 [M, ~] = size(f);
 err = 1/(M^2) * sum(abs(f-g), 'all');
 end
@@ -54,17 +69,16 @@ img = double(img);
 [M, ~] = size(img);
 exponents = [0:J-1];
 bases = 0.5 * ones(1, J);
-P = M * (bases .^ exponents);
+P = M * (bases .^ exponents);            % precompute sizes for all levels 
 pyr = zeros (sum(P), M);
 r=1;c=1;
 fj = img;
 for level=1:J
     if level > 1 
-         fj = reduce(fj, sigma);
+         fj = reduce(fj, sigma);         % approximation
     end
     if level < J
-        
-        dj =  fj - expand(reduce(fj, sigma), sigma);
+        dj =  fj - expand(reduce(fj, sigma), sigma); % residuals
         pyr(r:r+P(level)-1, c:c+P(level)-1) = dj;
         r = r + P(level); c = c+P(level)/4;
     end 
@@ -114,8 +128,8 @@ function g = convolutionFilter(img, H)
   img = double(img);
   H = double(H);
   [M, N]= size(img);
-  img = shift(img, M,N);    % center the image
-  F = fft2(img);                  % frequency domain representation
+  img = shift(img, M,N);                % center the image
+  F = fft2(img);                        % frequency domain representation
   G = F .* H;                           % convolution in frequency domain
   g = real(ifft2(G));                   % return to spatial domain
   g = shift(g, M,N);                    % uncenter the image
