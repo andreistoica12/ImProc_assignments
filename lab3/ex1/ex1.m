@@ -28,7 +28,7 @@ figure(); imshow(result);
 title('Result 1c')
 
 
-
+% exercise 1f
 n=2;
 D0=60;
 [M, N]= size(img);
