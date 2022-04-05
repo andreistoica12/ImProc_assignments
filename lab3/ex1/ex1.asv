@@ -11,12 +11,12 @@ title("Centred Fourier spectrum of characters.pgm");
 % log and exponential transformations
 [logSpectrum, greyScaleLogSpectrum] = logFourierSpectrum(centeredSpectrum);
 figure(); imshow(greyScaleLogSpectrum);
+titlRe("Log transformation applied to the \ncentered Fourier spectrum for characters.pgm");
 title({'Log transformation applied to the';'centered Fourier spectrum for characters.pgm'})
 
 expSpectrum = expFourierSpectrum(logSpectrum);
 figure(); imshow(expSpectrum);
-title({'Exponential transformation applied to the';'log Fourier spectrum for characters.pgm'})
-
+title("Exponential transformation applied to the \nlog Fourier spectrum for characters.pgm");
 
 n=2;
 D0=60;

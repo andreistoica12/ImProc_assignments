@@ -1,7 +1,9 @@
-function spectrum = centeredFourierSpectrum(img)
+function [spectrum, greyScaleSpectrum] = centeredFourierSpectrum(img)
     [H, W] = size(img);
     imgd = double(img);
 
+    % in order to compute the centered Fourier spectrum, we need to first
+    % multiply each pixel of the image by (-1)^(x+y)
     temp = zeros(H, W, 'double');
     for x = 1:H
         for y = 1:W
@@ -11,15 +13,19 @@ function spectrum = centeredFourierSpectrum(img)
     
 
     fft = fft2(temp);
-    spectrum = fft;
 
-%     % TODO: need to apply a transformation and map to [0, 255]
-%     spectrum = zeros(H, W, 'double');
-%     for x = 1:H
-%         for y = 1:W
-%             spectrum(x, y) = sqrt(real(fft(x, y))^2 + imag(fft(x, y))^2);
-%         end
-%     end
+    % the Fourier spectrum computed after the formula : square root of the
+    % sum of the real part raised to the power of 2 and the imaginary part
+    % raised to the power of 2
+    spectrum = zeros(H, W, 'double');
+    for x = 1:H
+        for y = 1:W
+            spectrum(x, y) = sqrt(real(fft(x, y))^2 + imag(fft(x, y))^2);
+        end
+    end
+
+
+    greyScaleSpectrum = spectrum/(max(spectrum(:))) * 255;
 
 
 %     % slow implementation, using formula
