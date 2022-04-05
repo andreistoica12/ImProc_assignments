@@ -17,6 +17,17 @@ expSpectrum = expFourierSpectrum(logSpectrum);
 figure(); imshow(expSpectrum);
 title({'Exponential transformation applied to the';'log Fourier spectrum for characters.pgm'})
 
+% exercise 1c
+imgd = double(img);
+ft = fft2(imgd);
+conjugate = conj(ft);
+conjugate(1,1) = 0;
+ift = ifft2(conjugate);
+result = uint8(ift);
+figure(); imshow(result);
+title('Result 1c')
+
+
 
 n=2;
 D0=60;
